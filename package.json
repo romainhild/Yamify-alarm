@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/romainhild/Yamify-alarm/issues"
   },
-  "homepage": "https://github.com/romainhild/Yamify-alarm#readme"
+  "homepage": "https://github.com/romainhild/Yamify-alarm#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
