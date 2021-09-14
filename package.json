@@ -1,0 +1,19 @@
+{
+  "name": "yamify-alarm",
+  "version": "1.0.0",
+  "description": "An alarm that uses Spotify to send music on a Yamaha soundbar",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romainhild/Yamify-alarm.git"
+  },
+  "author": "Romain Hild",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/romainhild/Yamify-alarm/issues"
+  },
+  "homepage": "https://github.com/romainhild/Yamify-alarm#readme"
+}
