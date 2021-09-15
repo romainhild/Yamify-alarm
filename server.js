@@ -8,6 +8,7 @@ const path = require('path')
 const fs = require('fs');
 const mongoose = require('mongoose');
 
+const routes = require('./routes');
 const secrets = require('./secrets');
 
 const app = new express();
@@ -19,18 +20,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 app
     .get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'public/index.html'));
-    })
-    .post('/', (req, res) => {
-    })
-    .get('/list', (req, res) => {
-	res.status(200).send({ nbAlarm: 1, alarms: [{id: '1', name: 'toto'}]});
-    })
-    .get('/id/:id', (req, res) => {
-    })
-    .delete('/id/:id', (req, res) => {
-    })
-    .put('/id/:id', (req, res) => {
     });
+app.use('/alarms', routes);
 
 const httpPort = 3333;
 const httpsPort = 3334;
