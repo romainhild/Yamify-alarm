@@ -11,7 +11,7 @@ router
     })
     .post('/', async (req, res) => {
 	const alarm = new Alarm({
-	    time: req.body.alarm,
+	    time: req.body.time,
 	    repetition: req.body.repetition,
 	    volume: req.body.volume,
 	    playlist: req.body.playlist,
