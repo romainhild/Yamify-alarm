@@ -23,6 +23,9 @@ function makeHeader(id, time, state) {
     switch1.setAttribute("id", `switch${id}`);
     if( state )
 	switch1.setAttribute('checked', '');
+    switch1.onchange = function() {
+	stateChanged(id, switch1.checked);
+    };
     divSwitch.appendChild(switch1);
     dflex.appendChild(divSwitch);
     h1.appendChild(dflex);
@@ -44,7 +47,10 @@ function makeTime(alarm) {
     time.setAttribute("id", `time${alarm._id}`);
     time.setAttribute("name", `time${alarm._id}`);
     time.setAttribute("required", '');
-    time.setAttribute("value", alarm.time); // hh:mm
+    time.setAttribute("value", alarm.time);
+    time.onchange = function() {
+	timeChanged(alarm._id, time.value, alarm.time);
+    };
     divIn.appendChild(time);
     div.appendChild(divIn);
     return div;
@@ -69,8 +75,12 @@ function makeRepetition(alarm) {
 	input.setAttribute("class", "btn-check");
 	input.setAttribute("autocomplete", "off");
 	input.setAttribute("id", `check${day}${alarm._id}`);
+	input.setAttribute("value", day);
 	if( alarm.repetition[day] )
 	    input.setAttribute("checked", "");
+	input.onchange = function() {
+	    repetChanged(alarm._id, input.value, input.checked);
+	};
 	divGr.appendChild(input);
 	let label = document.createElement("label");
 	label.setAttribute("class", "btn btn-primary");
@@ -90,7 +100,7 @@ function makeVolume(alarm) {
     label.setAttribute("for", `volume${alarm._id}`);
     label.className = "col-sm-3 col-form-label";
     label.setAttribute("id", `volumeLabel${alarm._id}`);
-    label.innerHTML = `Volume ${alarm.volume}`;
+    label.innerHTML = `Volume ${alarm.volume}%`;
     div.appendChild(label);
     let divIn = document.createElement('div');
     divIn.className = "col-sm-9";
@@ -102,6 +112,9 @@ function makeVolume(alarm) {
     volume.setAttribute("step", "1");
     volume.setAttribute("id", `volume${alarm._id}`);
     volume.setAttribute("value", alarm.volume);
+    volume.onchange = function() {
+	volumeChanged(alarm._id, volume.value, alarm.volume);
+    };
     divIn.appendChild(volume);
     div.appendChild(divIn);
     return div;
@@ -166,7 +179,6 @@ function makeCollapse(alarm) {
 }
 
 function makeAlarm(alarm) {
-    console.log(alarm);
     let accordion = document.getElementById("accordionAlarm");
     var alarmItem = document.createElement('div');
     alarmItem.className = "accordion-item";
@@ -177,10 +189,66 @@ function makeAlarm(alarm) {
     accordion.appendChild(alarmItem);
 }
 
-axios.get("https://test.hild.ovh/alarms")
+function stateChanged(id, state) {
+    axios.patch(`alarms/${id}`, {state: `${state}`})
+	.then(function(response) {
+	    alarms.get(id).state = state;
+	})
+	.catch(function(error) {
+	    console.log(error);
+	    console.log(alarms);
+	    console.log(id);
+	    document.getElementById(`switch${id}`).checked = alarms.get(id).state;
+	});
+}
+
+function timeChanged(id, time) {
+    axios.patch(`alarms/${id}`, {time: `${time}`})
+	.then(function(response) {
+	    alarms.get(id).time = time;
+	    document.getElementById(`textHeader${id}`).innerHTML = time;
+	})
+	.catch(function(error) {
+	    console.log(error);
+	    document.getElementById(`time${id}`).value = alarms.get(id).time;
+	});
+}
+
+function repetChanged(id, day, state) {
+    let newRepetition = Object.assign({}, alarms.get(id).repetition);
+    newRepetition[day] = state;
+    console.log(alarms.get(id).repetition);
+    console.log(newRepetition);
+    axios.patch(`alarms/${id}`, {repetition: newRepetition})
+	.then(function(response) {
+	    alarms.get(id).repetition = newRepetition;
+	})
+	.catch(function(error) {
+	    console.log(error);
+	    document.getElementById(`check${day}${id}`).checked = !state;
+	});
+    console.log(`alarm ${id} changed repetition for ${day} to ${state}`);
+}
+
+function volumeChanged(id, volume) {
+    axios.patch(`alarms/${id}`, {volume: volume})
+	.then(function(response) {
+	    alarms.get(id).volume = volume;
+	    document.getElementById(`volumeLabel${id}`).innerHTML = `Volume ${volume}%`;
+	})
+	.catch(function(error) {
+	    console.log(error);
+	    document.getElementById(`volume${id}`).value = alarms.get(id).volume;
+	});
+};
+
+
+var alarms = new Map([]);
+axios.get("alarms")
     .then(function (response) {
-	for ( alarm in response.data )
-	    makeAlarm(response.data[alarm]);
+	for ( let alarm of response.data )
+	    alarms.set(alarm._id, alarm);
+	alarms.forEach(makeAlarm);
     })
     .catch(function (error) {
 	// handle error
