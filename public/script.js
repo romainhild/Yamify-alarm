@@ -150,6 +150,9 @@ function makeDelete(alarm) {
     button.setAttribute("type", "button");
     button.className = "btn btn-danger col-sm-3";
     button.innerHTML = "Supprimer";
+    button.onclick = function() {
+	alarmDelete(alarm._id);
+    };
     div.appendChild(button);
     return div;
 }
@@ -182,6 +185,7 @@ function makeAlarm(alarm) {
     let accordion = document.getElementById("accordionAlarm");
     var alarmItem = document.createElement('div');
     alarmItem.className = "accordion-item";
+    alarmItem.setAttribute("id", `item${alarm._id}`);
     let header = makeHeader(alarm._id, alarm.time, alarm.state);
     let collapse = makeCollapse(alarm);
     alarmItem.appendChild(header);
@@ -241,6 +245,17 @@ function volumeChanged(id, volume) {
 	    document.getElementById(`volume${id}`).value = alarms.get(id).volume;
 	});
 };
+
+function alarmDelete(id) {
+    axios.delete(`alarms/${id}`)
+	.then(function(response) {
+	    alarms.delete(id);
+	    document.getElementById(`item${id}`).remove();
+	})
+	.catch(function(error) {
+	    console.log(error);
+	});
+}
 
 
 var alarms = new Map([]);
