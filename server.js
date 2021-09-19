@@ -10,18 +10,16 @@ const mongoose = require('mongoose');
 
 const routes = require('./routes');
 const secrets = require('./secrets');
+const auth = require('./auth');
 
 const app = new express();
 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname, 'public')))
 
-app
-    .get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'public/index.html'));
-    });
 app.use('/alarms', routes);
+app.use( '/', [auth, express.static(path.join(__dirname, 'public'))]);
 
 const httpPort = 3333;
 const httpsPort = 3334;

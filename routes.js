@@ -10,15 +10,25 @@ router
 	res.send(alarms);
     })
     .post('/', async (req, res) => {
-	const alarm = new Alarm({
-	    time: req.body.time,
-	    repetition: req.body.repetition,
-	    volume: req.body.volume,
-	    playlist: req.body.playlist,
-	    state: req.body.state
-	});
-	await alarm.save();
-	res.send(alarm);
+	if( 'time' in req.body
+	    && 'repetition' in req.body
+	    && 'volume' in req.body
+	    && 'playlist' in req.body
+	    && 'state' in req.body )
+	{
+	    const alarm = new Alarm({
+		time: req.body.time,
+		repetition: req.body.repetition,
+		volume: req.body.volume,
+		playlist: req.body.playlist,
+		state: req.body.state
+	    });
+	    await alarm.save();
+	    res.send(alarm);
+	}
+	else {
+	    res.status(400).send({error: 'Argument missing'});
+	}
     })
     .get('/:id', async (req, res) => {
 	try {

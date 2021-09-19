@@ -322,6 +322,11 @@ function saveAlarm() {
 document.getElementById("addButton").onclick = addAlarm;
 document.getElementById("saveNewAlarmButton").onclick = saveAlarm;
 
+var settingsModal = document.getElementById('settingsModal')
+settingsModal.addEventListener('show.bs.modal', function (event) {
+    console.log('open settings');
+});
+
 var alarms = new Map([]);
 axios.get("alarms")
     .then(function (response) {
