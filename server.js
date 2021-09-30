@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+var exphbs  = require('express-handlebars');
 const http = require('http');
 const https = require('https');
 const bodyParser = require('body-parser');
@@ -18,8 +19,14 @@ const app = new express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+app.engine('handlebars', exphbs());
+app.set('view engine', 'handlebars');
+
+app.get('/', (req, res) => {
+    res.render('index');
+});
 app.use('/alarms', routes);
-app.use( '/', [auth, express.static(path.join(__dirname, 'public'))]);
+app.use(express.static('public'));
 
 const httpPort = 3333;
 const httpsPort = 3334;
