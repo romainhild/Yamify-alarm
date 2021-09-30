@@ -7,9 +7,9 @@ const bodyParser = require('body-parser');
 const path = require('path')
 const fs = require('fs');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 const routes = require('./routes');
-const secrets = require('./secrets');
 const auth = require('./auth');
 
 const app = new express();
@@ -23,10 +23,10 @@ app.use( '/', [auth, express.static(path.join(__dirname, 'public'))]);
 
 const httpPort = 3333;
 const httpsPort = 3334;
-const options = {auth:{username: secrets.dbUser, password: secrets.dbPass},
-		 authSource: secrets.dbAuth,
-		 dbName: secrets.dbName};
-mongoose.connect('mongodb://'+secrets.dbHost+':'+secrets.dbPort, options, (err) => {
+const options = {auth:{username: process.env.DB_USER, password: process.env.DB_PWD},
+		 authSource: process.env.DB_AUTH,
+		 dbName: process.env.DB_NAME};
+mongoose.connect('mongodb://'+process.env.DB_HOST+':'+process.env.DB_PORT, options, (err) => {
     if(err)
 	console.log(err);
     else {
@@ -39,9 +39,9 @@ mongoose.connect('mongodb://'+secrets.dbHost+':'+secrets.dbPort, options, (err) 
 	https
 	    .createServer(
 		{
-		    key: fs.readFileSync('/etc/letsencrypt/live/'+secrets.server+'/privkey.pem'),
-		    cert: fs.readFileSync('/etc/letsencrypt/live/'+secrets.server+'/cert.pem'),
-		    ca: fs.readFileSync('/etc/letsencrypt/live/'+secrets.server+'/chain.pem'),
+		    key: fs.readFileSync('/etc/letsencrypt/live/'+process.env.SERVER+'/privkey.pem'),
+		    cert: fs.readFileSync('/etc/letsencrypt/live/'+process.env.SERVER+'/cert.pem'),
+		    ca: fs.readFileSync('/etc/letsencrypt/live/'+process.env.SERVER+'/chain.pem'),
 		},
 		app
 	    )
