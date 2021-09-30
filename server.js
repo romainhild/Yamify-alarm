@@ -10,8 +10,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const routes = require('./routes');
-const auth = require('./auth');
+const alarmRoutes = require('./routes/alarmRoutes');
 
 const app = new express();
 
@@ -25,7 +24,7 @@ app.set('view engine', 'handlebars');
 app.get('/', (req, res) => {
     res.render('index');
 });
-app.use('/alarms', routes);
+app.use('/alarms', alarmRoutes);
 app.use(express.static('public'));
 
 const httpPort = 3333;

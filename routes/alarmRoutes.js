@@ -1,8 +1,7 @@
 'use strict';
 
-const express = require('express');
-const Alarm = require('./models/Alarm');
-const router = express.Router();
+const router = require('express').Router();
+const Alarm = require('../models/Alarm');
 
 router
     .get('/', async (req, res) => {
