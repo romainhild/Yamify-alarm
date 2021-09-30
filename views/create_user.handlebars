@@ -1,0 +1,24 @@
+<div class="container">
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <span class="navbar-brand">Alarmes</span>
+    </div>
+  </nav>
+  <div class="row">
+    <form action="/user" method="post">
+      <h2>Create User</h2>
+      <div class="input-field">
+        <input type="text" name="username" id="username" placeholder="Enter Username">
+      </div>
+      <div class="input-field">
+        <input type="password" name="password" id="password" placeholder="Enter Password">
+      </div>
+      <div class="input-field">
+        <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm Password">
+      </div>
+      <input type="submit" id="button" value="Create User">
+    </form>
+  </div>
+</div>
+<script src="/create_user.js"></script>
+

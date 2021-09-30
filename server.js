@@ -5,11 +5,11 @@ var exphbs  = require('express-handlebars');
 const http = require('http');
 const https = require('https');
 const bodyParser = require('body-parser');
-const path = require('path')
 const fs = require('fs');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+const routes = require('./routes/routes');
 const alarmRoutes = require('./routes/alarmRoutes');
 
 const app = new express();
@@ -21,9 +21,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
-app.get('/', (req, res) => {
-    res.render('index');
-});
+app.use('/', routes);
 app.use('/alarms', alarmRoutes);
 app.use(express.static('public'));
 
