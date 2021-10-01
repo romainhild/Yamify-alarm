@@ -12,6 +12,7 @@ require('dotenv').config();
 
 const routes = require('./routes/routes');
 const alarmRoutes = require('./routes/alarmRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = new express();
 
@@ -24,6 +25,7 @@ app.set('view engine', 'handlebars');
 
 app.use('/', routes);
 app.use('/alarms', alarmRoutes);
+app.use('/user', userRoutes);
 app.use(express.static('public'));
 
 const httpPort = 3333;
