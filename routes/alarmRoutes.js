@@ -2,36 +2,34 @@
 
 const router = require('express').Router();
 const Alarm = require('../models/Alarm');
+const {verify} = require('../auth');
 
+router.use(verify);
 router
     .get('/', async (req, res) => {
-        const alarms = await Alarm.find();
+        const alarms = await Alarm.find({username: res.locals.username});
         res.send(alarms);
     })
     .post('/', async (req, res) => {
-        if( 'time' in req.body
-            && 'repetition' in req.body
-            && 'volume' in req.body
-            && 'playlist' in req.body
-            && 'state' in req.body )
-        {
+        try{
             const alarm = new Alarm({
                 time: req.body.time,
                 repetition: req.body.repetition,
                 volume: req.body.volume,
                 playlist: req.body.playlist,
-                state: req.body.state
+                state: req.body.state,
+                username: res.locals.username
             });
             await alarm.save();
             res.send(alarm);
         }
-        else {
-            res.status(400).send({error: 'Argument missing'});
+        catch(e){
+            return res.status(400).send(e.message);
         }
     })
     .get('/:id', async (req, res) => {
         try {
-            const alarm = await Alarm.findOne({ _id: req.params.id });
+            const alarm = await Alarm.findOne({ _id: req.params.id, username: res.locals.username });
             res.send(alarm);
         } catch {
             res.status(404).send({ error: "Alarm doesn't exist!" });
@@ -39,7 +37,7 @@ router
     })
     .delete('/:id', async (req, res) => {
         try {
-            await Alarm.deleteOne({ _id: req.params.id });
+            await Alarm.deleteOne({ _id: req.params.id, username: res.locals.username });
             res.sendStatus(204);
         } catch {
             res.status(204).send({error: "Alarm doesn't exist!" });
@@ -47,9 +45,9 @@ router
     })
     .patch('/:id', async (req, res) => {
         try {
-            const alarm = await Alarm.findOne({ _id: req.params.id });
+            const alarm = await Alarm.findOne({ _id: req.params.id, username: res.locals.username });
             if( req.body.time )
-                alarm.time = req.body.time; // carefull if Date
+                alarm.time = req.body.time;
             if( req.body.repetition )
                 alarm.repetition = req.body.repetition;
             if( req.body.volume )

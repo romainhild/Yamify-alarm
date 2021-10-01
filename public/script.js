@@ -327,6 +327,7 @@ settingsModal.addEventListener('show.bs.modal', function (event) {
     console.log('open settings');
 });
 
+axios.defaults.withCredentials = true;
 var alarms = new Map([]);
 axios.get("alarms")
     .then(function (response) {
