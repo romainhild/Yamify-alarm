@@ -1,68 +1,69 @@
 <div class="container">
   <nav class="navbar navbar-light bg-light">
-	<div class="container-fluid">
-	  <span class="navbar-brand">Alarmes</span>
-	  <form class="d-flex">
-	    <button  type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="bi bi-gear"></i></button>
-	  </form>
-	</div>
+    <div class="container-fluid">
+      <span class="navbar-brand">Alarmes</span>
+      <form class="d-flex">
+	<button  type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#settingsModal"><i class="bi bi-gear"></i></button>
+      </form>
+    </div>
   </nav>
   <div class="accordion pt-2" id="accordionAlarm">
   </div>
 </div>
 <div class="row pt-2 justify-content-center">
   <div class="col-12 text-center">
-	<button class="btn btn-primary btn-lg rounded-pill" id="addButton">
-	  <i class="bi bi-plus-circle-fill"></i>
-	</button>
+    <button class="btn btn-primary btn-lg rounded-pill" id="addButton">
+      <i class="bi bi-plus-circle-fill"></i>
+    </button>
   </div>
 </div>
 
 <div class="modal fade" id="newAlarmModal">
   <div class="modal-dialog">
-	<div class="modal-content">
-	  <div class="modal-header">
+    <div class="modal-content">
+      <div class="modal-header">
         <h5 class="modal-title">Creation d'une alarme</H5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-	  </div>
-	  <div class="modal-body" id="newAlarmBody">
-	  </div>
-	  <div class="modal-footer">
+      </div>
+      <div class="modal-body" id="newAlarmBody">
+      </div>
+      <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveNewAlarmButton" disabled>Save changes</button>
-	  </div>
-	</div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-	<div class="modal-content">
-	  <div class="modal-header">
+    <div class="modal-content">
+      <div class="modal-header">
         <h5 class="modal-title" id="settingsModalLabel">Reglages</H5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-	  </div>
-	  <div class="modal-body" id="settingsBody">
-	    <form>
-	      <div class="row mb-3">
-	  	<label for="inputYamaha" class="col-sm-2 col-form-label">Yamaha</label>
-	  	<div class="col-sm-10">
-	  	  <input type="text" class="form-control" id="inputYamaha">
-	  	</div>
-	      </div>
-	      <div class="row mb-3">
-	  	<label for="inputSpotify" class="col-sm-2 col-form-label">Spotify</label>
-	  	<div class="col-sm-10">
-	  	  <input type="text" readonly class="form-control-plaintext" id="inputSpotify" value="">
-	  	</div>
-	      </div>
-	    </form>
-	  </div>
-	  <div class="modal-footer">
+      </div>
+      <div class="modal-body" id="settingsBody">
+	<form>
+          <div class="row mb-3">
+            <div class="input-group mb-3">
+              <span class="input-group-text">Spotify</span>
+              <input type="text" class="form-control" readonly id="inputSpotify" aria-label="Username">
+              <button class="btn btn-outline-secondary" type="button" id="loginSpotify" onclick="location.href='spotify/login'">Login</button>
+            </div>
+          </div>
+	  <div class="row mb-3">
+            <div class="input-group mb-3">
+              <span class="input-group-text">Yamaha</span>
+              <input type="text" class="form-control" id="inputYamaha" aria-label="Yamaha">
+            </div>
+          </div>
+	</form>
+      </div>
+      <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveSettingsButton">Save changes</button>
-	  </div>
-	</div>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -340,7 +340,14 @@ var settingsModal = document.getElementById('settingsModal')
 settingsModal.addEventListener('show.bs.modal', function (event) {
     axios.get('user')
         .then(function(response) {
-            document.getElementById("inputYamaha").value = response.data[0].yamaha_ip;
+            let user = response.data[0];
+            document.getElementById("inputYamaha").value = user.yamaha_ip;
+            if( user.name ) {
+                document.getElementById("inputSpotify").value = user.name;
+                let button = document.getElementById("loginSpotify");
+                button.innerHTML = "Logout";
+                button.setAttribute("onclick", "location.href='spotify/logout'");
+            }
         })
         .catch(function(error) {
             console.log(error);

@@ -13,6 +13,7 @@ require('dotenv').config();
 const routes = require('./routes/routes');
 const alarmRoutes = require('./routes/alarmRoutes');
 const userRoutes = require('./routes/userRoutes');
+const spotifyRoutes = require('./routes/spotifyRoutes');
 
 const app = new express();
 
@@ -25,6 +26,7 @@ app.set('view engine', 'handlebars');
 
 app.use('/', routes);
 app.use('/alarms', alarmRoutes);
+app.use('/spotify', spotifyRoutes);
 app.use('/user', userRoutes);
 app.use(express.static('public'));
 
