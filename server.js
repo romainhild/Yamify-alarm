@@ -5,6 +5,7 @@ var exphbs  = require('express-handlebars');
 const http = require('http');
 const https = require('https');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const mongoose = require('mongoose');
 require('dotenv').config();
@@ -14,7 +15,7 @@ const alarmRoutes = require('./routes/alarmRoutes');
 
 const app = new express();
 
-
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
