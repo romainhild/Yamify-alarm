@@ -54,7 +54,7 @@ function makeTime(id, time) {
     timeIn.setAttribute("required", '');
     timeIn.setAttribute("value", time);
     timeIn.onchange = function() {
-	timeChanged(id, timeIn.value, time);
+	timeChanged(id, timeIn.value);
     };
     divIn.appendChild(timeIn);
     div.appendChild(divIn);
@@ -118,14 +118,14 @@ function makeVolume(id, volume) {
     volumeIn.setAttribute("id", `volume${id}`);
     volumeIn.setAttribute("value", volume);
     volumeIn.onchange = function() {
-	volumeChanged(id, volumeIn.value, volume);
+	volumeChanged(id, volumeIn.value);
     };
     divIn.appendChild(volumeIn);
     div.appendChild(divIn);
     return div;
 }
 
-function makePlaylist(id, playlist) {
+function makePlaylist(id, playlist_id) {
     let div = document.createElement('div');
     div.className = "row mb-3";
     let label = document.createElement('label');
@@ -139,11 +139,24 @@ function makePlaylist(id, playlist) {
     playlistIn.className = "form-select";
     playlistIn.setAttribute("aria-label", "Select Playlist");
     playlistIn.setAttribute("id", `playlist${id}`);
-    let option = document.createElement("option");
-    option.setAttribute("value", playlist);
-    option.setAttribute("selected", "");
-    option.innerHTML = playlist;
-    playlistIn.appendChild(option);
+    if(!playlist_id) {
+        let option = document.createElement("option");
+        option.setAttribute("value", "");
+        option.setAttribute("selected", "");
+        option.innerHTML = "Choisir une playlist";
+        playlistIn.appendChild(option);
+    }
+    for (const [id, play] of playlists.entries()) {
+        let option = document.createElement("option");
+        option.setAttribute("value", id);
+        if( playlist_id && id == playlist_id )
+            option.setAttribute("selected", "");
+        option.innerHTML = play.name;
+        playlistIn.appendChild(option);
+    };
+    playlistIn.onchange = function() {
+	playlistChanged(id, playlistIn.value);
+    };
     divIn.appendChild(playlistIn);
     div.appendChild(divIn);
     return div;
@@ -178,7 +191,7 @@ function makeCollapse(alarm) {
     form.appendChild(repet);
     let volume = makeVolume(alarm._id, alarm.volume);
     form.appendChild(volume);
-    let playlist = makePlaylist(alarm._id, alarm.playlist);
+    let playlist = makePlaylist(alarm._id, alarm.playlist_id);
     form.appendChild(playlist);
     let del = makeDelete(alarm._id);
     form.appendChild(del);
@@ -266,6 +279,38 @@ function volumeChanged(id, volume) {
     }
 };
 
+function playlistChanged(id, playlist_id) {
+    if( id ) {
+        axios.patch(`alarms/${id}`, {playlist_id: playlist_id,
+                                     playlist_name: playlists.get(playlist_id).name,
+                                     playlist_uri: playlists.get(playlist_id).uri})
+            .then(function(response) {
+                alarms.get(id).playlist_id = playlist_id;
+                alarms.get(id).playlist_name = playlists.get(playlist_id).name;
+                alarms.get(id).playlist_uri = playlists.get(playlist_id).uri;
+            })
+            .catch(function(error) {
+                console.log(error);
+                let select = document.getElementById(`playlist${id}`);
+                for( opt of select.children ) {
+                    if(opt.value == alarms.get(id).playlist_id)
+                        opt.setAttribute("selected", "");
+                    else
+                        opt.removeAttribute("selected");
+                }
+            });
+    } else {
+	let t = document.getElementById("time");
+	let p = document.getElementById("playlist");
+	if( t.value && p.value ) {
+	    document.getElementById("saveNewAlarmButton").disabled = false;
+	}
+	else {
+	    document.getElementById("saveNewAlarmButton").disabled = true;
+	}
+    }
+};
+
 function alarmDelete(id) {
     axios.delete(`alarms/${id}`)
 	.then(function(response) {
@@ -279,7 +324,6 @@ function alarmDelete(id) {
 
 ///////////////// add an alarm
 function addAlarm() {
-    console.log("add alarm");
     let form = document.createElement('form');
     let time = makeTime('', '');
     form.appendChild(time);
@@ -287,9 +331,9 @@ function addAlarm() {
     form.appendChild(repet);
     let volume = makeVolume('', 50);
     form.appendChild(volume);
-    let playlist = makePlaylist('', 'test'); // to change !!!
+    let playlist = makePlaylist('', null);
     form.appendChild(playlist);
-    document.getElementById('newAlarmBody').appendChild(form);
+    document.getElementById('newAlarmBody').replaceChildren(form);
     var myModal = new bootstrap.Modal(document.getElementById('newAlarmModal'));
     myModal.show();
 }
@@ -300,12 +344,14 @@ function saveAlarm() {
     for( let day of daysFR )
 	repetition[day] = document.getElementById(`check${day}`).checked;
     let volume = document.getElementById("volume").value;
-    let playlist = document.getElementById("playlist").value;
+    let playlist_id = document.getElementById("playlist").value;
     axios.post('alarms',
 	       { time: time,
 		 repetition: repetition,
 		 volume: volume,
-		 playlist: playlist,
+		 playlist_id: playlist_id,
+                 playlist_name: playlists.get(playlist_id).name,
+                 playlist_uri: playlists.get(playlist_id).uri,
 		 state: true })
 	.then(function(response) {
 	    alarms.set(response.data._id, response.data);
@@ -338,30 +384,41 @@ function saveSettings() {
 document.getElementById("saveSettingsButton").onclick = saveSettings;
 var settingsModal = document.getElementById('settingsModal')
 settingsModal.addEventListener('show.bs.modal', function (event) {
-    axios.get('user')
-        .then(function(response) {
-            let user = response.data[0];
-            document.getElementById("inputYamaha").value = user.yamaha_ip;
-            if( user.name ) {
-                document.getElementById("inputSpotify").value = user.name;
-                let button = document.getElementById("loginSpotify");
-                button.innerHTML = "Logout";
-                button.setAttribute("onclick", "location.href='spotify/logout'");
-            }
-        })
-        .catch(function(error) {
-            console.log(error);
-        });
-    console.log('open settings');
+    document.getElementById("inputYamaha").value = user.yamaha_ip;
+    if( user.name ) {
+        document.getElementById("inputSpotify").value = user.name;
+        let button = document.getElementById("loginSpotify");
+        button.innerHTML = "Logout";
+        button.setAttribute("onclick", "location.href='spotify/logout'");
+    }
 });
 
 axios.defaults.withCredentials = true;
+var user;
+axios.get('user')
+    .then(function(response) {
+        user = response.data[0];
+    })
+    .catch(function (error) {
+	console.log(error);
+    });
+var playlists = new Map();
 var alarms = new Map([]);
-axios.get("alarms")
-    .then(function (response) {
-	for ( let alarm of response.data )
-	    alarms.set(alarm._id, alarm);
-	alarms.forEach(makeAlarm);
+axios.get('spotify/playlist')
+    .then(function(response) {
+        // playlists = response.data;
+        response.data.forEach((p) => {
+            playlists.set(p.id, { name: p.name, uri: p.uri });
+        });
+        axios.get("alarms")
+            .then(function (response) {
+	        for ( let alarm of response.data )
+	            alarms.set(alarm._id, alarm);
+	        alarms.forEach(makeAlarm);
+            })
+            .catch(function (error) {
+	        console.log(error);
+            });
     })
     .catch(function (error) {
 	console.log(error);

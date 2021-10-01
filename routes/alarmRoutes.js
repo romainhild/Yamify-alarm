@@ -16,7 +16,9 @@ router
                 time: req.body.time,
                 repetition: req.body.repetition,
                 volume: req.body.volume,
-                playlist: req.body.playlist,
+                playlist_id: req.body.playlist_id,
+                playlist_name: req.body.playlist_name,
+                playlist_uri: req.body.playlist_uri,
                 state: req.body.state,
                 username: res.locals.username
             });
@@ -52,8 +54,12 @@ router
                 alarm.repetition = req.body.repetition;
             if( req.body.volume )
                 alarm.volume = req.body.volume;
-            if( req.body.playlist )
-                alarm.playlist = req.body.playlist;
+            if( req.body.playlist_id )
+                alarm.playlist_id = req.body.playlist_id;
+            if( req.body.playlist_name )
+                alarm.playlist_name = req.body.playlist_name;
+            if( req.body.playlist_uri )
+                alarm.playlist_uri = req.body.playlist_uri;
             if( req.body.state )
                 alarm.state = req.body.state;
 

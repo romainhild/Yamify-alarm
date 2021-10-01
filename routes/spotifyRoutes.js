@@ -94,6 +94,26 @@ router
                 });
         }
     })
+    .get('/playlist', async (req, res) => {
+        let user;
+        try {
+            user = await User.findOne({ username: res.locals.username });
+        } catch(e) {
+            res.status(404).send({ error: "User doesn't exist!", message: e.message });
+        }
+        let options = {
+            url: 'https://api.spotify.com/v1/me/playlists?limit=50',
+            headers: { 'Authorization': 'Bearer ' + user.access_token },
+        };
+        axios(options)
+            .then(function(response) {
+                res.send(response.data.items);
+            })
+            .catch(function(error) {
+                console.log(error);
+                res.status(500).send(error);
+            });
+    })
 ;
 
 module.exports = router;
