@@ -316,14 +316,35 @@ function saveAlarm() {
 	})
 	.catch(function(error) {
 	    console.log(error);
-	});;
+	});
 }
 
 document.getElementById("addButton").onclick = addAlarm;
 document.getElementById("saveNewAlarmButton").onclick = saveAlarm;
 
+function saveSettings() {
+    let yamaha_ip = document.getElementById("inputYamaha").value;
+    axios.patch('user', {yamaha_ip: yamaha_ip})
+        .then(function(response) {
+            var myModalEl = document.getElementById('settingsModal');
+	    var myModal = bootstrap.Modal.getInstance(myModalEl);
+	    myModal.hide();
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+}
+
+document.getElementById("saveSettingsButton").onclick = saveSettings;
 var settingsModal = document.getElementById('settingsModal')
 settingsModal.addEventListener('show.bs.modal', function (event) {
+    axios.get('user')
+        .then(function(response) {
+            document.getElementById("inputYamaha").value = response.data[0].yamaha_ip;
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
     console.log('open settings');
 });
 
