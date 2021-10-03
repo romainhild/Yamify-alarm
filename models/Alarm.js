@@ -18,9 +18,10 @@ function job(a) {
         return job;
     } else {
         var d = new Date();
-        if( d.getHours() > h || (d.getHours() == h && d.getMinutes() > m) )
+        if( d.getHours() > h || (d.getHours() == h && d.getMinutes() >= m) )
             d.setDate(d.getDate()+1);
         d.setHours(h, m, 0);
+        console.log(d.toString());
         let job = schedule.scheduleJob(d, function() {
             console.log(`Alarm running on ${d.toString()}`);
             setAlarm(a.username, a.playlist_uri, a.volume);
@@ -41,8 +42,10 @@ const alarm = mongoose.Schema({
 });
 
 alarm.post('save', function(a) {
-    alarmMap.get(a._id).cancel();
-    alarmMap.set(a._id, job(a)
+    if( alarmMap.has(a._id) )
+        alarmMap.get(a._id).cancel();
+    if(a.state)
+        alarmMap.set(a._id, job(a));
     console.log(`save alarm ${a._id}`);
 });
 alarm.post('deleteOne', function(a) {
