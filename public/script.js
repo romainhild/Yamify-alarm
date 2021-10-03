@@ -276,6 +276,8 @@ function volumeChanged(id, volume) {
 		console.log(error);
 		document.getElementById(`volume${id}`).value = alarms.get(id).volume;
 	    });
+    } else {
+        document.getElementById(`volumeLabel${id}`).innerHTML = `Volume ${volume}%`;
     }
 };
 

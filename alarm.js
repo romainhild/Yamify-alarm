@@ -2,6 +2,7 @@
 
 const axios = require('axios');
 const User = require('./models/User');
+const spotify = require('./spotify');
 
 function powerUpSB(user, playlist_uri, volume) {
     axios.get(`http://${user.yamaha_ip}/YamahaExtendedControl/v1/main/setPower?power=on`)
@@ -48,14 +49,7 @@ function setVolumeSpotify(user, playlist_uri, volume) {
 }
 
 function playPlaylist(user, playlist_uri, volume) {
-    axios.put(`https://api.spotify.com/v1/me/player/play?device_id=${user.yamaha_id}`, { 'context_uri': playlist_uri }, {headers: { 'Authorization': `Bearer ${user.access_token}` }})
-        .then(function(response) {
-            console.log(response.data);
-            updateVolumeSB(user, volume);
-        })
-        .catch(function(error) {
-            console.log(error);
-        });
+    spotify.play(user, playlist_uri, volume, () => {updateVolumeSB(user, volume)});
 }
 
 function updateVolumeSB(user, volume) {

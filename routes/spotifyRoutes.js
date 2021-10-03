@@ -4,6 +4,7 @@ const router = require('express').Router();
 const crypto = require('crypto');
 const axios = require('axios');
 const User = require('../models/User');
+const spotify = require('../spotify');
 const {verify} = require('../auth');
 
 router.use(verify);
@@ -101,18 +102,12 @@ router
         } catch(e) {
             res.status(404).send({ error: "User doesn't exist!", message: e.message });
         }
-        let options = {
-            url: 'https://api.spotify.com/v1/me/playlists?limit=50',
-            headers: { 'Authorization': 'Bearer ' + user.access_token },
-        };
-        axios(options)
-            .then(function(response) {
-                res.send(response.data.items);
-            })
-            .catch(function(error) {
-                console.log(error);
-                res.status(500).send(error);
-            });
+        spotify.playlist(user, (status, data) => {
+            if( status == 200 )
+                res.send(data);
+            else
+                res.status(500).send(data);
+        });
     })
     .get('/devices', async (req, res) => {
         let user;
@@ -121,18 +116,12 @@ router
         } catch(e) {
             res.status(404).send({ error: "User doesn't exist!", message: e.message });
         }
-        let options = {
-            url: 'https://api.spotify.com/v1/me/player/devices',
-            headers: { 'Authorization': 'Bearer ' + user.access_token },
-        };
-        axios(options)
-            .then(function(response) {
-                res.send(response.data.devices);
-            })
-            .catch(function(error) {
-                console.log(error);
-                res.status(500).send(error);
-            });
+        spotify.devices(user, (status, data) => {
+            if( status == 200 )
+                res.send(data);
+            else
+                res.status(500).send(data);
+        });
     })
 ;
 
