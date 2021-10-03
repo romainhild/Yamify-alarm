@@ -27,6 +27,8 @@ router
                 user.refresh_token = req.body.refresh_token;
             if( req.body.yamaha_ip )
                 user.yamaha_ip = req.body.yamaha_ip;
+            if( req.body.yamaha_id )
+                user.yamaha_id = req.body.yamaha_id;
 
             await user.save();
             res.send(user);

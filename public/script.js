@@ -370,7 +370,8 @@ document.getElementById("saveNewAlarmButton").onclick = saveAlarm;
 
 function saveSettings() {
     let yamaha_ip = document.getElementById("inputYamaha").value;
-    axios.patch('user', {yamaha_ip: yamaha_ip})
+    let yamaha_id = document.getElementById("inputGroupSelectYamaha").value;
+    axios.patch('user', {yamaha_ip: yamaha_ip, yamaha_id: yamaha_id})
         .then(function(response) {
             var myModalEl = document.getElementById('settingsModal');
 	    var myModal = bootstrap.Modal.getInstance(myModalEl);
@@ -390,6 +391,24 @@ settingsModal.addEventListener('show.bs.modal', function (event) {
         let button = document.getElementById("loginSpotify");
         button.innerHTML = "Logout";
         button.setAttribute("onclick", "location.href='spotify/logout'");
+
+        var select = document.getElementById('inputGroupSelectYamaha');
+        axios.get('spotify/devices')
+            .then(function(response) {
+                let opts = response.data.map((d) => {
+                    let option = document.createElement("option");
+                    option.setAttribute("value", d.id);
+                    if( user.yamaha_id == d.id )
+                        option.setAttribute("selected", "");
+                    option.innerHTML = d.name;
+                    return option;
+                });
+                let opt = document.createElement("option");
+                opt.setAttribute("value", "");
+                opt.innerHTML = "Choose...";
+                opts.unshift(opt);
+                select.replaceChildren(...opts);
+            });
     }
 });
 
@@ -406,7 +425,6 @@ var playlists = new Map();
 var alarms = new Map([]);
 axios.get('spotify/playlist')
     .then(function(response) {
-        // playlists = response.data;
         response.data.forEach((p) => {
             playlists.set(p.id, { name: p.name, uri: p.uri });
         });
